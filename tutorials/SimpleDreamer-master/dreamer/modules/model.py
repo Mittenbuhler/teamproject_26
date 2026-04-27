@@ -7,12 +7,12 @@ from dreamer.utils.utils import create_normal_dist, build_network, horizontal_fo
 
 
 class RSSM(nn.Module):
-    def __init__(self, action_size, config):
+    def __init__(self, action_size, config, device):
         super().__init__()
         self.config = config.parameters.dreamer.rssm
 
-        self.recurrent_model = RecurrentModel(action_size, config)
-        self.transition_model = TransitionModel(config)
+        self.recurrent_model = RecurrentModel(action_size, config, device)
+        self.transition_model = TransitionModel(config, device)
         self.representation_model = RepresentationModel(config)
 
     def recurrent_model_input_init(self, batch_size):
@@ -22,10 +22,10 @@ class RSSM(nn.Module):
 
 
 class RecurrentModel(nn.Module):
-    def __init__(self, action_size, config):
+    def __init__(self, action_size, config, device):
         super().__init__()
         self.config = config.parameters.dreamer.rssm.recurrent_model
-        self.device = config.operation.device
+        self.device = device
         self.stochastic_size = config.parameters.dreamer.stochastic_size
         self.deterministic_size = config.parameters.dreamer.deterministic_size
 
@@ -47,10 +47,10 @@ class RecurrentModel(nn.Module):
 
 
 class TransitionModel(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config, device):
         super().__init__()
         self.config = config.parameters.dreamer.rssm.transition_model
-        self.device = config.operation.device
+        self.device = device
         self.stochastic_size = config.parameters.dreamer.stochastic_size
         self.deterministic_size = config.parameters.dreamer.deterministic_size
 

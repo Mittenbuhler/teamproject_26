@@ -32,7 +32,7 @@ class Dreamer:
 
         self.encoder = Encoder(observation_shape, config).to(self.device)
         self.decoder = Decoder(observation_shape, config).to(self.device)
-        self.rssm = RSSM(action_size, config).to(self.device)
+        self.rssm = RSSM(action_size, config, self.device).to(self.device)
         self.reward_predictor = RewardModel(config).to(self.device)
         if config.parameters.dreamer.use_continue_flag:
             self.continue_predictor = ContinueModel(config).to(self.device)

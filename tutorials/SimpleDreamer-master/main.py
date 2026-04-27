@@ -1,15 +1,27 @@
 import os
+import sys
 
-os.environ["MUJOCO_GL"] = "egl"
+os.environ.setdefault("MUJOCO_GL", "glfw" if sys.platform == "darwin" else "egl")
 
 import argparse
 from datetime import datetime
+import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from dreamer.algorithms.dreamer import Dreamer
 from dreamer.algorithms.plan2explore import Plan2Explore
 from dreamer.utils.utils import load_config, get_base_directory
 from dreamer.envs.envs import make_dmc_env, make_atari_env, get_env_infos
+
+
+def resolve_device(requested_device):
+    if str(requested_device).startswith("cuda") and not torch.cuda.is_available():
+        print(
+            "CUDA was requested, but this PyTorch build has no CUDA support. "
+            "Falling back to CPU."
+        )
+        return "cpu"
+    return requested_device
 
 
 def main(config_file):
@@ -46,7 +58,8 @@ def main(config_file):
         + config.operation.log_dir
     )
     writer = SummaryWriter(log_dir)
-    device = config.operation.device
+    device = resolve_device(config.operation.device)
+    config.operation.device = device
 
     if config.algorithm == "dreamer-v1":
         agent = Dreamer(

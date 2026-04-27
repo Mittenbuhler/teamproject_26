@@ -1,7 +1,11 @@
 import gym
+import numpy as np
 import dmc2gym
 
 from dreamer.envs.wrappers import *
+
+if not hasattr(np, "int"):
+    np.int = int
 
 
 def make_dmc_env(
